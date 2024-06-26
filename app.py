@@ -65,7 +65,7 @@ if page == "Deskripsi Data":
     # Pie chart for fraud variable
     st.subheader("Pie Chart Variabel Fraud")
     fraud_counts = data['fraud'].value_counts()
-    fig1, ax1 = plt.subplots()
+    fig1, ax1 = plt.subplots(figsize=(6, 6))
     ax1.pie(fraud_counts, labels=['Sah', 'Penipuan'], autopct='%1.1f%%', startangle=140)
     st.pyplot(fig1)
     
