@@ -194,9 +194,6 @@ elif page == "Perbandingan Model":
     ax3.legend(loc="lower right")
     st.pyplot(fig3)
 
-# New Prediction Page
-elif page == "Prediksi Baru":
-    st.title("Prediksi Menggunakan Model SVM")
 
 # Initialize session state variables
 if 'days' not in st.session_state:
@@ -219,6 +216,9 @@ def update_days():
 # Callback function when seconds input changes
 def update_seconds():
     st.session_state.days = convert_seconds_to_days(st.session_state.second)
+    # New Prediction Page
+elif page == "Prediksi Baru":
+    st.title("Prediksi Menggunakan Model SVM")
 
     # Input fields for amount, days, and seconds
     amount = st.number_input("Amount", min_value=0.0, max_value=30000.0)
