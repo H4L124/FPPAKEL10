@@ -24,6 +24,13 @@ def convert_days_to_seconds(days):
 
 def convert_seconds_to_days(seconds):
     return seconds / 86400
+    # Callback function when days input changes
+def update_days():
+    st.session_state.second = convert_days_to_seconds(st.session_state.days)
+
+# Callback function when seconds input changes
+def update_seconds():
+    st.session_state.days = convert_seconds_to_days(st.session_state.second)
 
 # Set page config
 st.set_page_config(page_title="Dashboard Klasifikasi SVM dan KMeans SVM")
