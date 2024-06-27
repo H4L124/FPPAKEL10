@@ -210,15 +210,7 @@ elif page == "Prediksi Baru":
 
     def update_seconds():
         st.session_state.update_days = True
-
-    # Input fields for amount
-    amount = st.number_input("Amount", min_value=0.0, max_value=30000.0)
-
-    # Input fields for days and seconds with unique keys
-    days = st.number_input("Days", min_value=0.0, value=0.0, step=1.0, key='days_input', on_change=update_days)
-    second = st.number_input("Second", min_value=0.0, value=convert_days_to_seconds(days), step=1.0, key='second_input', on_change=update_seconds)
-
-    # Sync days and seconds based on update flags
+            # Sync days and seconds based on update flags
     if st.session_state.update_days:
         second = convert_days_to_seconds(days)
         st.session_state.update_days = False
@@ -227,9 +219,15 @@ elif page == "Prediksi Baru":
         days = convert_seconds_to_days(second)
         st.session_state.update_seconds = False
 
-    # Display synchronized values for user feedback
-    st.write(f"Days: {days}")
-    st.write(f"Second: {second}")
+    # Input fields for amount
+    amount = st.number_input("Amount", min_value=0.0, max_value=30000.0)
+
+    # Input fields for days and seconds with unique keys
+    days = st.number_input("Days", min_value=0.0, value=0.0, step=1.0, key='days_input', on_change=update_days)
+    second = st.number_input("Second", min_value=0.0, value=convert_days_to_seconds(days), step=1.0, key='second_input', on_change=update_seconds)
+
+
+
 
     # Prediction button
     if st.button("Prediksi"):
