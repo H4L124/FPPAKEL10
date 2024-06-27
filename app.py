@@ -4,7 +4,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 from sklearn.svm import SVC
-from sklearn.metrics import confusion_matrix, accuracy_score, recall_score, precision_score
+from sklearn.metrics import confusion_matrix, accuracy_score, recall_score, precision_score, roc_curve, auc
 from sklearn.cluster import KMeans
 from joblib import load
 
@@ -65,7 +65,7 @@ if page == "Deskripsi Data":
     # Pie chart for fraud variable
     st.subheader("Pie Chart Variabel Fraud")
     fraud_counts = data['fraud'].value_counts()
-    fig1, ax1 = plt.subplots(figsize=(4, 4))
+    fig1, ax1 = plt.subplots(figsize=(3, 3))
     ax1.pie(fraud_counts, labels=['Sah', 'Penipuan'], autopct='%1.1f%%', startangle=140)
     st.pyplot(fig1)
     
@@ -82,6 +82,7 @@ if page == "Deskripsi Data":
 
 # Predictions and evaluations
 y_pred_svm = svm_model.predict(X_test_svm)
+y_pred_svm_proba = svm_model.decision_function(X_test_svm)
 cm_svm = confusion_matrix(y_test_svm, y_pred_svm)
 accuracy_svm = accuracy_score(y_test_svm, y_pred_svm)
 recall_svm = recall_score(y_test_svm, y_pred_svm)
@@ -89,10 +90,18 @@ precision_svm = precision_score(y_test_svm, y_pred_svm)
 
 X_test_ksvm['cluster'] = kmeans.predict(X_test_ksvm)
 y_pred_cluster_svm = cluster_svm_model.predict(X_test_ksvm)
+y_pred_cluster_svm_proba = cluster_svm_model.decision_function(X_test_ksvm)
 cm_cluster_svm = confusion_matrix(y_test_ksvm, y_pred_cluster_svm)
 accuracy_cluster_svm = accuracy_score(y_test_ksvm, y_pred_cluster_svm)
 recall_cluster_svm = recall_score(y_test_ksvm, y_pred_cluster_svm)
 precision_cluster_svm = precision_score(y_test_ksvm, y_pred_cluster_svm)
+
+# Calculate ROC curve and AUC
+fpr_svm, tpr_svm, _ = roc_curve(y_test_svm, y_pred_svm_proba)
+roc_auc_svm = auc(fpr_svm, tpr_svm)
+
+fpr_ksvm, tpr_ksvm, _ = roc_curve(y_test_ksvm, y_pred_cluster_svm_proba)
+roc_auc_ksvm = auc(fpr_ksvm, tpr_ksvm)
 
 # SVM Predictions Page
 if page == "Prediksi SVM":
@@ -140,16 +149,46 @@ elif page == "Perbandingan Model":
     else:
         st.write("Metode SVM dan KMeans SVM memiliki performa prediksi yang sama untuk penipuan transaksi kartu kredit.")
 
+    st.subheader("Kurva ROC Perbandingan Metode")
+    fig3, ax3 = plt.subplots()
+    ax3.plot(fpr_svm, tpr_svm, color='blue', lw=2, label=f'SVM ROC curve (area = {roc_auc_svm:.2f})')
+    ax3.plot(fpr_ksvm, tpr_ksvm, color='red', lw=2, label=f'KMeans SVM ROC curve (area = {roc_auc_ksvm:.2f})')
+    ax3.plot([0, 1], [0, 1], color='grey', lw=2, linestyle='--')
+    ax3.set_xlim([0.0, 1.0])
+    ax3.set_ylim([0.0, 1.05])
+    ax3.set_xlabel('False Positive Rate')
+    ax3.set_ylabel('True Positive Rate')
+    ax3.set_title('Kurva ROC')
+    ax3.legend(loc="lower right")
+    st.pyplot(fig3)
 # New Prediction Page
 elif page == "Prediksi Baru":
     st.title("Prediksi Baru Menggunakan Model SVM")
     
-    amount = st.number_input("Amount", min_value=0.0, max_value=30000.0)
-    days = st.number_input("Days", min_value=0.0, value=0.0)
-    second = st.number_input("Second", min_value=0.0, value=days * 86400.0)
+    amount = st.number_input("Amount (dalam US Dollar)", min_value=0.0, max_value=1000000.0)
+   # Define session state to store input values
+if 'days' not in st.session_state:
+    st.session_state.days = 0.0
+if 'seconds' not in st.session_state:
+    st.session_state.seconds = 0.0
+
+# Input for seconds and days with callback functions to sync values
+def update_days():
+    st.session_state.days = st.session_state.seconds / 86400.0
+
+def update_seconds():
+    st.session_state.seconds = st.session_state.days * 86400.0
+
+# Create input fields with callbacks
+seconds = st.number_input("Second (Isi salah satu antara second atau days)", min_value=0.0, value=st.session_state.seconds, on_change=update_days)
+days = st.number_input("Days (Isi salah satu antara second atau days)", min_value=0.0, value=st.session_state.days, on_change=update_seconds)
+
+# Button for prediction
+if st.button("Prediksi"):
+    input_data = np.array([[amount, st.session_state.seconds, st.session_state.days]])
     
     if st.button("Prediksi"):
         input_data = np.array([[amount, second, days]])
         standardized_input = svm_scaler.transform(input_data)
         prediction = svm_model.predict(standardized_input)
-        st.write(f"Hasil Prediksi: {'Penipuan' if prediction[0] == 1 else 'Sah'}")
+        st.write(f"Hasil Prediksi: {'Transaksi kartu kredit ini adalah Penipuan' if prediction[0] == 1 else 'Transaksi kartu kredit ini adalah Sah'}")
