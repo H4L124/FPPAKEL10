@@ -7,6 +7,24 @@ from sklearn.svm import SVC
 from sklearn.metrics import confusion_matrix, accuracy_score, recall_score, precision_score, roc_curve, auc
 from sklearn.cluster import KMeans
 from joblib import load
+# Dummy scaler and model for demonstration purposes
+from sklearn.preprocessing import StandardScaler
+
+# Initialize dummy scaler and model
+svm_scaler = StandardScaler()
+svm_model = SVC()
+
+# Example scaled data for initialization
+svm_scaler.fit([[0, 0, 0], [30000, 86400*365, 365]])
+
+# Dummy model fit for demonstration purposes
+svm_model.fit(svm_scaler.transform([[0, 0, 0], [30000, 86400*365, 365]]), [0, 1])
+
+def convert_days_to_seconds(days):
+    return days * 86400
+
+def convert_seconds_to_days(seconds):
+    return seconds / 86400
 
 # Set page config
 st.set_page_config(page_title="Dashboard Klasifikasi SVM dan KMeans SVM")
@@ -179,12 +197,18 @@ elif page == "Perbandingan Model":
     ax3.legend(loc="lower right")
     st.pyplot(fig3)
 # New Prediction Page
-elif page == "Prediksi Baru":
-    st.title("Prediksi Baru Menggunakan Model SVM")
-
+  # Input for amount
     amount = st.number_input("Amount", min_value=0.0, max_value=30000.0)
+
+    # Input for days and seconds with dependency logic
     days = st.number_input("Days", min_value=0.0, value=0.0)
-    second = st.number_input("Second", min_value=0.0, value=days * 86400.0)
+    second = st.number_input("Second", min_value=0.0, value=convert_days_to_seconds(days))
+    
+    if second != convert_days_to_seconds(days):
+        days = convert_seconds_to_days(second)
+
+    if days != convert_seconds_to_days(second):
+        second = convert_days_to_seconds(days)
     
     if st.button("Prediksi"):
         input_data = np.array([[amount, second, days]])
