@@ -198,41 +198,46 @@ elif page == "Perbandingan Model":
 elif page == "Prediksi Baru":
     st.title("Prediksi Menggunakan Model SVM")
 
-    # Initialize session state for update flags
-    if 'update_days' not in st.session_state:
-        st.session_state.update_days = False
-    if 'update_seconds' not in st.session_state:
-        st.session_state.update_seconds = False
+ import streamlit as st
+import numpy as np
 
-    # Define callback functions
-    def update_days():
-        st.session_state.update_seconds = True
+# Initialize session state variables
+if 'days' not in st.session_state:
+    st.session_state.days = 0.0
+if 'second' not in st.session_state:
+    st.session_state.second = 0.0
 
-    def update_seconds():
-        st.session_state.update_days = True
-            # Sync days and seconds based on update flags
-    if st.session_state.update_days:
-        second = convert_days_to_seconds(days)
-        st.session_state.update_days = False
+# Function to convert days to seconds
+def convert_days_to_seconds(days):
+    return days * 86400
 
-    if st.session_state.update_seconds:
-        days = convert_seconds_to_days(second)
-        st.session_state.update_seconds = False
+# Function to convert seconds to days
+def convert_seconds_to_days(seconds):
+    return seconds / 86400
 
-    # Input fields for amount
+# Callback function when days input changes
+def update_days():
+    st.session_state.second = convert_days_to_seconds(st.session_state.days)
+
+# Callback function when seconds input changes
+def update_seconds():
+    st.session_state.days = convert_seconds_to_days(st.session_state.second)
+
+# New Prediction Page
+elif page == "Prediksi Baru":
+    st.title("Prediksi Menggunakan Model SVM")
+
+    # Input fields for amount, days, and seconds
     amount = st.number_input("Amount", min_value=0.0, max_value=30000.0)
+    
+    # Input field for days
+    days = st.number_input("Days", min_value=0.0, value=st.session_state.days, step=1.0, key='days', on_change=update_days)
 
-    # Input fields for days and seconds with unique keys
-    days = st.number_input("Days", min_value=0.0, value=0.0, step=1.0, key='days_input', on_change=update_days)
-    second = st.number_input("Second", min_value=0.0, value=convert_days_to_seconds(days), step=1.0, key='second_input', on_change=update_seconds)
+    # Input field for seconds
+    second = st.number_input("Second", min_value=0.0, value=st.session_state.second, step=1.0, key='second', on_change=update_seconds)
 
-
-
-
-    # Prediction button
     if st.button("Prediksi"):
         input_data = np.array([[amount, second, days]])
         standardized_input = svm_scaler.transform(input_data)
         prediction = svm_model.predict(standardized_input)
         st.write(f"Hasil Prediksi: {'Transaksi kartu kredit ini adalah Penipuan' if prediction[0] == 1 else 'Transaksi kartu kredit ini adalah Sah'}")
-
