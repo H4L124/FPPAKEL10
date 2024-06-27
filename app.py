@@ -164,26 +164,10 @@ elif page == "Perbandingan Model":
 # New Prediction Page
 elif page == "Prediksi Baru":
     st.title("Prediksi Baru Menggunakan Model SVM")
-    
-   if 'days' not in st.session_state:
-    st.session_state.days = 0.0
-       if 'seconds' not in st.session_state:
-    st.session_state.seconds = 0.0
-# Input for seconds and days with callback functions to sync values
-def update_days():
-    st.session_state.days = st.session_state.seconds / 86400.0
 
-def update_seconds():
-    st.session_state.seconds = st.session_state.days * 86400.0
-
-# Create input fields with callbacks
- amount = st.number_input("Amount (dalam US Dollar)", min_value=0.0, max_value=1000000.0)
-seconds = st.number_input("Second (Isi salah satu antara second atau days)", min_value=0.0, value=st.session_state.seconds, on_change=update_days)
-days = st.number_input("Days (Isi salah satu antara second atau days)", min_value=0.0, value=st.session_state.days, on_change=update_seconds)
-
-# Button for prediction
-if st.button("Prediksi"):
-    input_data = np.array([[amount, st.session_state.seconds, st.session_state.days]])
+    amount = st.number_input("Amount", min_value=0.0, max_value=30000.0)
+    days = st.number_input("Days", min_value=0.0, value=0.0)
+    second = st.number_input("Second", min_value=0.0, value=days * 86400.0)
     
     if st.button("Prediksi"):
         input_data = np.array([[amount, second, days]])
