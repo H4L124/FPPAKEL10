@@ -204,14 +204,21 @@ elif page == "Prediksi Baru":
     days = st.number_input("Days", min_value=0.0, value=0.0, step=1.0)
     second = st.number_input("Second", min_value=0.0, value=convert_days_to_seconds(days), step=1.0)
     
-    if second != convert_days_to_seconds(days):
-        days = convert_seconds_to_days(second)
-        second = convert_days_to_seconds(days)
+    # Update days and seconds consistently
+    if st.session_state.get('second_updated') or st.session_state.get('days_updated'):
+        if st.session_state.get('second_updated'):
+            days = convert_seconds_to_days(second)
+            st.session_state['days_updated'] = False
+        elif st.session_state.get('days_updated'):
+            second = convert_days_to_seconds(days)
+            st.session_state['second_updated'] = False
+    else:
+        st.session_state['second_updated'] = True
+        st.session_state['days_updated'] = True
     
-    if days != convert_seconds_to_days(second):
-        second = convert_days_to_seconds(days)
-        days = convert_seconds_to_days(second)
-    
+    st.write(f"Days: {days}")
+    st.write(f"Seconds: {second}")
+
     if st.button("Prediksi"):
         input_data = np.array([[amount, second, days]])
         standardized_input = svm_scaler.transform(input_data)
