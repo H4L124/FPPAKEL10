@@ -7,7 +7,6 @@ from sklearn.svm import SVC
 from sklearn.metrics import confusion_matrix, accuracy_score, recall_score, precision_score, roc_curve, auc
 from sklearn.cluster import KMeans
 from joblib import load
-# Dummy scaler and model for demonstration purposes
 from sklearn.preprocessing import StandardScaler
 
 # Initialize dummy scaler and model
@@ -129,8 +128,6 @@ accuracy_cluster_svm = (TP_cluster_svm + TN_cluster_svm) / (TP_cluster_svm + TN_
 recall_cluster_svm = TP_cluster_svm / (TP_cluster_svm + FN_cluster_svm)
 precision_cluster_svm = TN_cluster_svm / (TN_cluster_svm + FP_cluster_svm)
 
-
-
 # Calculate ROC curve and AUC
 fpr_svm, tpr_svm, _ = roc_curve(y_test_svm, y_pred_svm_proba)
 roc_auc_svm = auc(fpr_svm, tpr_svm)
@@ -196,22 +193,24 @@ elif page == "Perbandingan Model":
     ax3.set_title('Kurva ROC')
     ax3.legend(loc="lower right")
     st.pyplot(fig3)
-# New Prediction Page
-    page = "Prediksi Baru"
-if page == "Prediksi Baru":
-    st.title("Prediksi Menggunakan Model SVM")
-  # Input for amount
-    amount = st.number_input("Amount", min_value=0.0, max_value=30000.0)
 
+# New Prediction Page
+elif page == "Prediksi Baru":
+    st.title("Prediksi Menggunakan Model SVM")
+    
+    amount = st.number_input("Amount", min_value=0.0, max_value=30000.0)
+    
     # Input for days and seconds with dependency logic
-    days = st.number_input("Days", min_value=0.0, value=0.0)
-    second = st.number_input("Second", min_value=0.0, value=convert_days_to_seconds(days))
+    days = st.number_input("Days", min_value=0.0, value=0.0, step=1.0)
+    second = st.number_input("Second", min_value=0.0, value=convert_days_to_seconds(days), step=1.0)
     
     if second != convert_days_to_seconds(days):
         days = convert_seconds_to_days(second)
-
+        second = convert_days_to_seconds(days)
+    
     if days != convert_seconds_to_days(second):
         second = convert_days_to_seconds(days)
+        days = convert_seconds_to_days(second)
     
     if st.button("Prediksi"):
         input_data = np.array([[amount, second, days]])
