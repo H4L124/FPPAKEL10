@@ -197,6 +197,9 @@ elif page == "Perbandingan Model":
     ax3.legend(loc="lower right")
     st.pyplot(fig3)
 # New Prediction Page
+    page = "Prediksi Baru"
+if page == "Prediksi Baru":
+    st.title("Prediksi Menggunakan Model SVM")
   # Input for amount
     amount = st.number_input("Amount", min_value=0.0, max_value=30000.0)
 
