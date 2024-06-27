@@ -128,9 +128,9 @@ if page == "Prediksi SVM":
     st.table(cm_svm)
     
     st.subheader("Evaluasi Model")
-    st.write(f"Akurasi: {accuracy_svm:.2f}")
-    st.write(f"Sensitivitas: {recall_svm:.2f}")
-    st.write(f"Spesifisitas: {precision_svm:.2f}")
+    st.write(f"Akurasi: {accuracy_svm:.5f}")
+    st.write(f"Sensitivitas: {recall_svm:.5f}")
+    st.write(f"Spesifisitas: {precision_svm:.5f}")
 
 # KMeans SVM Predictions Page
 elif page == "Prediksi KMeans SVM":
@@ -140,23 +140,23 @@ elif page == "Prediksi KMeans SVM":
     st.table(cm_cluster_svm)
     
     st.subheader("Evaluasi Model")
-    st.write(f"Akurasi: {accuracy_cluster_svm:.2f}")
-    st.write(f"Sensitivitas: {recall_cluster_svm:.2f}")
-    st.write(f"Spesifisitas: {precision_cluster_svm:.2f}")
+    st.write(f"Akurasi: {accuracy_cluster_svm:.5f}")
+    st.write(f"Sensitivitas: {recall_cluster_svm:.5f}")
+    st.write(f"Spesifisitas: {precision_cluster_svm:.5f}")
 
 # Model Comparison Page
 elif page == "Perbandingan Model":
     st.title("Perbandingan Model SVM dan KMeans SVM")
-    
     st.subheader("Evaluasi Model SVM")
-    st.write(f"Akurasi: {accuracy_svm:.2f}")
-    st.write(f"Sensitivitas: {recall_svm:.2f}")
-    st.write(f"Spesifisitas: {precision_svm:.2f}")
+    st.write(f"Confusion Matrix SVM:\n{cm_svm}")
+    st.write(f"Akurasi: {accuracy_svm:.5f}")
+    st.write(f"Sensitivitas: {recall_svm:.5f}")
+    st.write(f"Spesifisitas: {precision_svm:.5f}")
     
     st.subheader("Evaluasi Model KMeans SVM")
-    st.write(f"Akurasi: {accuracy_cluster_svm:.2f}")
-    st.write(f"Sensitivitas: {recall_cluster_svm:.2f}")
-    st.write(f"Spesifisitas: {precision_cluster_svm:.2f}")
+    st.write(f"Akurasi: {accuracy_cluster_svm:.5f}")
+    st.write(f"Sensitivitas: {recall_cluster_svm:.5f}")
+    st.write(f"Spesifisitas: {precision_cluster_svm:.5f}")
     
     # Compare accuracy and display message based on comparison
     if accuracy_svm > accuracy_cluster_svm:
