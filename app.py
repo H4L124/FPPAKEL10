@@ -197,28 +197,37 @@ elif page == "Perbandingan Model":
 # New Prediction Page
 elif page == "Prediksi Baru":
     st.title("Prediksi Menggunakan Model SVM")
-    
-    amount = st.number_input("Amount", min_value=0.0, max_value=30000.0)
-    
-    # Input for days and seconds with dependency logic
-    days = st.number_input("Days", min_value=0.0, value=0.0, step=1.0)
-    second = st.number_input("Second", min_value=0.0, value=convert_days_to_seconds(days), step=1.0)
-    
-    # Update days and seconds consistently
-    if st.session_state.get('second_updated') or st.session_state.get('days_updated'):
-        if st.session_state.get('second_updated'):
-            days = convert_seconds_to_days(second)
-            st.session_state['days_updated'] = False
-        elif st.session_state.get('days_updated'):
-            second = convert_days_to_seconds(days)
-            st.session_state['second_updated'] = False
-    else:
-        st.session_state['second_updated'] = True
-        st.session_state['days_updated'] = True
-    
-    st.write(f"Days: {days}")
-    st.write(f"Seconds: {second}")
 
+    # Input fields for amount, days, and seconds
+    amount = st.number_input("Amount", min_value=0.0, max_value=30000.0)
+    days = st.number_input("Days", min_value=0.0, value=0.0, step=1.0, key='days')
+    second = st.number_input("Second", min_value=0.0, value=convert_days_to_seconds(days), step=1.0, key='second')
+
+    # Update logic for days and seconds
+    if 'update_days' not in st.session_state:
+        st.session_state.update_days = False
+    if 'update_seconds' not in st.session_state:
+        st.session_state.update_seconds = False
+
+    if st.session_state.update_days:
+        second = convert_days_to_seconds(days)
+        st.session_state.update_days = False
+
+    if st.session_state.update_seconds:
+        days = convert_seconds_to_days(second)
+        st.session_state.update_seconds = False
+
+    # Set callback for days input
+    def update_days():
+        st.session_state.update_seconds = True
+
+    # Set callback for seconds input
+    def update_seconds():
+        st.session_state.update_days = True
+
+    st.number_input("Days", min_value=0.0, value=days, step=1.0, key='days', on_change=update_days)
+    st.number_input("Second", min_value=0.0, value=second, step=1.0, key='second', on_change=update_seconds)
+    
     if st.button("Prediksi"):
         input_data = np.array([[amount, second, days]])
         standardized_input = svm_scaler.transform(input_data)
