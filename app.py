@@ -80,21 +80,38 @@ if page == "Deskripsi Data":
     axes[2].set_title('Days')
     st.pyplot(fig2)
 
-# Predictions and evaluations
+# Predictions and evaluations for SVM
 y_pred_svm = svm_model.predict(X_test_svm)
 y_pred_svm_proba = svm_model.decision_function(X_test_svm)
 cm_svm = confusion_matrix(y_test_svm, y_pred_svm)
-accuracy_svm = accuracy_score(y_test_svm, y_pred_svm)
-recall_svm = recall_score(y_test_svm, y_pred_svm)
-precision_svm = precision_score(y_test_svm, y_pred_svm)
 
+# Calculate accuracy, sensitivity, and specificity manually for SVM
+TP_svm = cm_svm[1, 1]
+FN_svm = cm_svm[1, 0]
+FP_svm = cm_svm[0, 1]
+TN_svm = cm_svm[0, 0]
+
+accuracy_svm = (TP_svm + TN_svm) / (TP_svm + TN_svm + FP_svm + FN_svm)
+recall_svm = TP_svm / (TP_svm + FN_svm)
+precision_svm = TN_svm / (TN_svm + FP_svm)
+
+# Predictions and evaluations for KMeans SVM
 X_test_ksvm['cluster'] = kmeans.predict(X_test_ksvm)
 y_pred_cluster_svm = cluster_svm_model.predict(X_test_ksvm)
 y_pred_cluster_svm_proba = cluster_svm_model.decision_function(X_test_ksvm)
 cm_cluster_svm = confusion_matrix(y_test_ksvm, y_pred_cluster_svm)
-accuracy_cluster_svm = accuracy_score(y_test_ksvm, y_pred_cluster_svm)
-recall_cluster_svm = recall_score(y_test_ksvm, y_pred_cluster_svm)
-precision_cluster_svm = precision_score(y_test_ksvm, y_pred_cluster_svm)
+
+# Calculate accuracy, sensitivity, and specificity manually for KMeans SVM
+TP_cluster_svm = cm_cluster_svm[1, 1]
+FN_cluster_svm = cm_cluster_svm[1, 0]
+FP_cluster_svm = cm_cluster_svm[0, 1]
+TN_cluster_svm = cm_cluster_svm[0, 0]
+
+accuracy_cluster_svm = (TP_cluster_svm + TN_cluster_svm) / (TP_cluster_svm + TN_cluster_svm + FP_cluster_svm + FN_cluster_svm)
+recall_cluster_svm = TP_cluster_svm / (TP_cluster_svm + FN_cluster_svm)
+precision_cluster_svm = TN_cluster_svm / (TN_cluster_svm + FP_cluster_svm)
+
+
 
 # Calculate ROC curve and AUC
 fpr_svm, tpr_svm, _ = roc_curve(y_test_svm, y_pred_svm_proba)
