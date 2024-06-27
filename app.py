@@ -201,18 +201,17 @@ elif page == "Perbandingan Model":
     ax3.legend(loc="lower right")
     st.pyplot(fig3)
 
-    # New Prediction Page
-elif page == "Prediksi Baru":
+if page == "Prediksi Baru":
     st.title("Prediksi Menggunakan Model SVM")
 
     # Input fields for amount, days, and seconds
     amount = st.number_input("Amount", min_value=0.0, max_value=30000.0)
     
-    # Input field for days
-    days = st.number_input("Days", min_value=0.0, value=st.session_state.days, step=1.0, key='days', on_change=update_days)
+    # Input field for days (remove value=st.session_state.days)
+    days = st.number_input("Days", min_value=0.0, step=1.0, key='days', on_change=update_days)
 
-    # Input field for seconds
-    second = st.number_input("Second", min_value=0.0, value=st.session_state.second, step=1.0, key='second', on_change=update_seconds)
+    # Input field for seconds (remove value=st.session_state.second)
+    second = st.number_input("Second", min_value=0.0, step=1.0, key='second', on_change=update_seconds)
 
     if st.button("Prediksi"):
         input_data = np.array([[amount, second, days]])
